@@ -18,6 +18,14 @@ const generateItemElement = function (item) {
     `;
   }
 
+  if (item.edited === true) {
+    itemTitle = 
+    `<form class="editedForm">
+      <input name="editField" value="${item.name}" type="text"/>
+    </form>
+    `;
+  }
+
   return `
     <li class='js-item-element' data-item-id='${item.id}'>
       ${itemTitle}
@@ -168,6 +176,24 @@ const handleItemEditedClicked = function() {
   });
 };
 
+const submitEditedItem = function() {
+  $('.js-shopping-list').on('submit', '.editedForm', event => {
+    event.preventDefault();
+    const value = event.target.editField.value;
+    console.log(value);
+    const id = getItemIdFromElement(event.currentTarget);
+    console.log(id);
+    changeItemName(id, value);
+    render();
+  });
+};
+
+const changeItemName = function(id, name) {
+  const editedItem = store.items.find(item => item.id === id);
+  editedItem.edited = !editedItem.edited;
+  editedItem.name = name;
+};
+
 
 /**
  * This function will be our callback when the
@@ -185,6 +211,7 @@ const handleShoppingList = function () {
   handleDeleteItemClicked();
   handleToggleFilterClick();
   handleItemEditedClicked();
+  submitEditedItem();
 };
 
 // when the page loads, call `handleShoppingList`
