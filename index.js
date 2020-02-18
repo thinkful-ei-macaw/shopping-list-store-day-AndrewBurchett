@@ -1,9 +1,11 @@
+'use strict'
+
 const store = {
   items: [
-    { id: cuid(), name: 'apples', checked: false },
-    { id: cuid(), name: 'oranges', checked: false },
-    { id: cuid(), name: 'milk', checked: true },
-    { id: cuid(), name: 'bread', checked: false }
+    { id: cuid(), name: 'apples', checked: false, edited: false },
+    { id: cuid(), name: 'oranges', checked: false, edited: false },
+    { id: cuid(), name: 'milk', checked: true, edited: false},
+    { id: cuid(), name: 'bread', checked: false, edited: false }
   ],
   hideCheckedItems: false
 };
@@ -25,6 +27,9 @@ const generateItemElement = function (item) {
         </button>
         <button class='shopping-item-delete js-item-delete'>
           <span class='button-label'>delete</span>
+        </button>
+        <button class='shopping-item-edit js-item-edit'>
+          <span class='button-label'>edit</span>
         </button>
       </div>
     </li>`;
@@ -89,6 +94,8 @@ const handleItemCheckClicked = function () {
   });
 };
 
+
+
 const getItemIdFromElement = function (item) {
   return $(item)
     .closest('.js-item-element')
@@ -145,6 +152,23 @@ const handleToggleFilterClick = function () {
   });
 };
 
+// create a function that changes one or more properties in the store
+const checkForEditedItem = function(id) {
+  const editedItem = store.items.find(item => item.id === id);
+  editedItem.edited = !editedItem.edited;
+};
+
+// create a function that adds an event listener, whose responsibility is to 
+// change the store and run the rendering function
+const handleItemEditedClicked = function() {
+  $('.js-shopping-list').on('click', '.js-item-edit', event => {
+    const id = getItemIdFromElement(event.currentTarget);
+    checkForEditedItem(id);
+    render();
+  });
+};
+
+
 /**
  * This function will be our callback when the
  * page loads. It is responsible for initially 
@@ -160,6 +184,7 @@ const handleShoppingList = function () {
   handleItemCheckClicked();
   handleDeleteItemClicked();
   handleToggleFilterClick();
+  handleItemEditedClicked();
 };
 
 // when the page loads, call `handleShoppingList`
